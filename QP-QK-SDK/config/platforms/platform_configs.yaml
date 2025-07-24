@@ -1,0 +1,439 @@
+# QP-QK SDK Platform Configuration Database
+# This file defines platform-specific configurations for AI agents
+# to use when generating microcontroller firmware projects.
+
+platforms:
+  # STM32F4 Series
+  stm32f4:
+    family: "STM32F4"
+    architecture: "ARM Cortex-M4"
+    features:
+      - fpu
+      - dsp
+      - real_time
+    
+    variants:
+      stm32f411:
+        flash_size: 512KB
+        ram_size: 128KB
+        max_freq: 100MHz
+        packages: ["LQFP64", "LQFP100", "UFBGA176"]
+        
+      stm32f407:
+        flash_size: 1MB
+        ram_size: 192KB
+        max_freq: 168MHz
+        packages: ["LQFP64", "LQFP100", "LQFP144", "UFBGA176"]
+        
+      stm32f429:
+        flash_size: 2MB
+        ram_size: 256KB
+        max_freq: 180MHz
+        packages: ["LQFP144", "LQFP176", "UFBGA176", "UFBGA216"]
+        features: ["tft_controller", "chrom_art"]
+    
+    memory_map:
+      flash_base: 0x08000000
+      ram_base: 0x20000000
+      ccm_base: 0x10000000
+      
+    peripherals:
+      uart: ["USART1", "USART2", "USART3", "UART4", "UART5", "USART6"]
+      spi: ["SPI1", "SPI2", "SPI3"]
+      i2c: ["I2C1", "I2C2", "I2C3"]
+      timer: ["TIM1", "TIM2", "TIM3", "TIM4", "TIM5", "TIM6", "TIM7", "TIM8"]
+      adc: ["ADC1", "ADC2", "ADC3"]
+      dac: ["DAC1"]
+      can: ["CAN1", "CAN2"]
+      usb: ["USB_OTG_FS", "USB_OTG_HS"]
+      ethernet: ["ETH"]
+      
+    compiler_flags:
+      base: ["-mcpu=cortex-m4", "-mthumb", "-mfpu=fpv4-sp-d16", "-mfloat-abi=hard"]
+      optimization: ["-Os", "-ffunction-sections", "-fdata-sections"]
+      debug: ["-g", "-DDEBUG"]
+      
+    linker_flags:
+      base: ["-mcpu=cortex-m4", "-mthumb", "-mfpu=fpv4-sp-d16", "-mfloat-abi=hard"]
+      specs: ["-specs=nano.specs", "-specs=nosys.specs"]
+      gc: ["-Wl,--gc-sections"]
+      
+    qk_config:
+      max_priority: 64
+      stack_size: 2048
+      recommended_tick_rate: 1000
+      max_rte_time_us: 100
+      
+    bsp_template: "templates/platforms/stm32f4/bsp.c"
+    main_template: "templates/platforms/stm32f4/main.c"
+    header_template: "templates/platforms/stm32f4/project_template.h"
+
+  # ESP32 Series
+  esp32:
+    family: "ESP32"
+    architecture: "Xtensa LX6"
+    features:
+      - dual_core
+      - wifi
+      - bluetooth
+      - real_time
+      
+    variants:
+      esp32:
+        flash_size: 4MB
+        ram_size: 520KB
+        max_freq: 240MHz
+        packages: ["QFN48", "QFN56"]
+        
+      esp32s2:
+        flash_size: 4MB
+        ram_size: 320KB
+        max_freq: 240MHz
+        packages: ["QFN56"]
+        features: ["usb_otg", "tft_controller"]
+        
+      esp32s3:
+        flash_size: 8MB
+        ram_size: 512KB
+        max_freq: 240MHz
+        packages: ["QFN56"]
+        features: ["dual_core", "vector_instructions"]
+        
+      esp32c3:
+        flash_size: 4MB
+        ram_size: 400KB
+        max_freq: 160MHz
+        packages: ["QFN32"]
+        architecture: "RISC-V"
+        
+    memory_map:
+      flash_base: 0x400C2000
+      ram_base: 0x3FFB0000
+      rtc_ram_base: 0x50000000
+      
+    peripherals:
+      uart: ["UART0", "UART1", "UART2"]
+      spi: ["SPI2", "SPI3", "HSPI", "VSPI"]
+      i2c: ["I2C0", "I2C1"]
+      timer: ["TIMER0", "TIMER1"]
+      adc: ["ADC1", "ADC2"]
+      dac: ["DAC1", "DAC2"]
+      can: ["TWAI"]
+      wifi: ["802.11 b/g/n"]
+      bluetooth: ["BLE", "Classic"]
+      
+    compiler_flags:
+      base: ["-mlongcalls", "-ffunction-sections", "-fdata-sections"]
+      optimization: ["-Os"]
+      debug: ["-g", "-DDEBUG"]
+      
+    linker_flags:
+      base: ["-nostdlib"]
+      gc: ["-Wl,--gc-sections"]
+      
+    qk_config:
+      max_priority: 32
+      stack_size: 4096
+      recommended_tick_rate: 1000
+      max_rte_time_us: 200
+      
+    bsp_template: "templates/platforms/esp32/bsp.c"
+    main_template: "templates/platforms/esp32/main.c"
+    header_template: "templates/platforms/esp32/project_template.h"
+
+  # MSP430 Series  
+  msp430:
+    family: "MSP430"
+    architecture: "MSP430"
+    features:
+      - ultra_low_power
+      - real_time
+      
+    variants:
+      msp430g2553:
+        flash_size: 16KB
+        ram_size: 512B
+        max_freq: 16MHz
+        packages: ["PDIP20", "SOIC20", "TSSOP20"]
+        
+      msp430f5529:
+        flash_size: 128KB
+        ram_size: 8KB
+        max_freq: 25MHz
+        packages: ["LQFP80", "LQFP100"]
+        features: ["usb"]
+        
+      msp430fr5969:
+        flash_size: 48KB
+        ram_size: 2KB
+        max_freq: 16MHz
+        packages: ["LQFP80"]
+        features: ["fram", "aes"]
+        
+    memory_map:
+      flash_base: 0x8000
+      ram_base: 0x0200
+      info_flash_base: 0x1000
+      
+    peripherals:
+      uart: ["USCI_A0", "USCI_A1"]
+      spi: ["USCI_B0", "USCI_B1"]  
+      i2c: ["USCI_B0", "USCI_B1"]
+      timer: ["TA0", "TA1", "TB0"]
+      adc: ["ADC10", "ADC12"]
+      comp: ["COMP_A", "COMP_B"]
+      
+    compiler_flags:
+      base: ["-mmcu=msp430g2553"]
+      optimization: ["-Os", "-ffunction-sections", "-fdata-sections"]
+      debug: ["-g", "-DDEBUG"]
+      
+    linker_flags:
+      base: ["-mmcu=msp430g2553"]
+      gc: ["-Wl,--gc-sections"]
+      
+    qk_config:
+      max_priority: 16
+      stack_size: 256
+      recommended_tick_rate: 100
+      max_rte_time_us: 1000
+      
+    bsp_template: "templates/platforms/msp430/bsp.c"
+    main_template: "templates/platforms/msp430/main.c"
+    header_template: "templates/platforms/msp430/project_template.h"
+
+  # Nordic nRF52 Series
+  nrf52:
+    family: "nRF52"
+    architecture: "ARM Cortex-M4"
+    features:
+      - bluetooth_le
+      - real_time
+      - ultra_low_power
+      
+    variants:
+      nrf52832:
+        flash_size: 512KB
+        ram_size: 64KB
+        max_freq: 64MHz
+        packages: ["QFN48", "WLCSP"]
+        
+      nrf52840:
+        flash_size: 1MB
+        ram_size: 256KB
+        max_freq: 64MHz
+        packages: ["QFN73", "WLCSP"]
+        features: ["usb", "802.15.4"]
+        
+    memory_map:
+      flash_base: 0x00000000
+      ram_base: 0x20000000
+      
+    peripherals:
+      uart: ["UART0", "UARTE0", "UARTE1"]
+      spi: ["SPI0", "SPI1", "SPI2", "SPIM0", "SPIM1", "SPIM2"]
+      i2c: ["TWI0", "TWI1", "TWIM0", "TWIM1"]
+      timer: ["TIMER0", "TIMER1", "TIMER2", "TIMER3", "TIMER4"]
+      rtc: ["RTC0", "RTC1", "RTC2"]
+      adc: ["SAADC"]
+      pwm: ["PWM0", "PWM1", "PWM2", "PWM3"]
+      radio: ["BLE", "802.15.4"]
+      
+    compiler_flags:
+      base: ["-mcpu=cortex-m4", "-mthumb", "-mfpu=fpv4-sp-d16", "-mfloat-abi=hard"]
+      optimization: ["-Os", "-ffunction-sections", "-fdata-sections"]
+      debug: ["-g", "-DDEBUG"]
+      
+    linker_flags:
+      base: ["-mcpu=cortex-m4", "-mthumb", "-mfpu=fpv4-sp-d16", "-mfloat-abi=hard"]
+      specs: ["-specs=nano.specs", "-specs=nosys.specs"]
+      gc: ["-Wl,--gc-sections"]
+      
+    qk_config:
+      max_priority: 32
+      stack_size: 1024
+      recommended_tick_rate: 1000
+      max_rte_time_us: 50
+      
+    bsp_template: "templates/platforms/nrf52/bsp.c"
+    main_template: "templates/platforms/nrf52/main.c"
+    header_template: "templates/platforms/nrf52/project_template.h"
+
+# Toolchain configurations
+toolchains:
+  gcc-arm-none-eabi:
+    name: "GCC ARM Embedded"
+    compiler: "arm-none-eabi-gcc"
+    linker: "arm-none-eabi-gcc"
+    objcopy: "arm-none-eabi-objcopy"
+    objdump: "arm-none-eabi-objdump"
+    size: "arm-none-eabi-size"
+    gdb: "arm-none-eabi-gdb"
+    platforms: ["stm32f4", "nrf52"]
+    
+  xtensa-esp32:
+    name: "ESP32 Toolchain"
+    compiler: "xtensa-esp32-elf-gcc" 
+    linker: "xtensa-esp32-elf-gcc"
+    objcopy: "xtensa-esp32-elf-objcopy"
+    objdump: "xtensa-esp32-elf-objdump"
+    size: "xtensa-esp32-elf-size"
+    gdb: "xtensa-esp32-elf-gdb"
+    platforms: ["esp32"]
+    
+  msp430-gcc:
+    name: "MSP430 GCC"
+    compiler: "msp430-elf-gcc"
+    linker: "msp430-elf-gcc"
+    objcopy: "msp430-elf-objcopy"
+    objdump: "msp430-elf-objdump"
+    size: "msp430-elf-size"
+    gdb: "msp430-elf-gdb"
+    platforms: ["msp430"]
+
+# Development board configurations
+boards:
+  nucleo-f411re:
+    platform: stm32f4
+    variant: stm32f411
+    package: LQFP64
+    crystal: 8MHz
+    programmer: stlink
+    led_pins:
+      - pin: "PA5"
+        color: "green"
+        active: "high"
+    button_pins:
+      - pin: "PC13"
+        type: "user"
+        active: "low"
+    uart_pins:
+      console:
+        tx: "PA2"
+        rx: "PA3"
+        af: "GPIO_AF7_USART2"
+        
+  esp32-devkit:
+    platform: esp32
+    variant: esp32
+    package: QFN48
+    crystal: 40MHz
+    programmer: esp32
+    led_pins:
+      - pin: "GPIO2"
+        color: "blue"
+        active: "high"
+    button_pins:
+      - pin: "GPIO0"
+        type: "boot"
+        active: "low"
+      - pin: "GPIO_NUM_0"
+        type: "user"
+        active: "low"
+    uart_pins:
+      console:
+        tx: "GPIO1"
+        rx: "GPIO3"
+        
+  launchpad-g2553:
+    platform: msp430
+    variant: msp430g2553
+    package: PDIP20
+    crystal: 1MHz
+    programmer: msp430
+    led_pins:
+      - pin: "P1.0"
+        color: "red"
+        active: "high"
+      - pin: "P1.6"
+        color: "green" 
+        active: "high"
+    button_pins:
+      - pin: "P1.3"
+        type: "user"
+        active: "low"
+
+# QP framework configuration
+qp_config:
+  version: "7.2.0"
+  
+  kernels:
+    qv:
+      type: "cooperative"
+      overhead_kb: 2
+      suitable_for: ["simple", "low_power", "single_priority"]
+      
+    qk:
+      type: "preemptive_non_blocking"
+      overhead_kb: 4
+      suitable_for: ["real_time", "mixed_priority", "deterministic"]
+      
+    qxk:
+      type: "dual_mode"
+      overhead_kb: 8
+      suitable_for: ["legacy_integration", "blocking_middleware"]
+      not_recommended_for: ["safety_critical"]
+      
+  event_pools:
+    small:
+      max_size: 16
+      typical_count: 20
+      
+    medium:
+      max_size: 64
+      typical_count: 10
+      
+    large:
+      max_size: 256
+      typical_count: 5
+      
+  trace_buffer_sizes:
+    development: 8192
+    production: 2048
+    minimal: 512
+
+# AI Agent generation rules
+generation_rules:
+  active_object_naming:
+    pattern: "([A-Z][a-z]+)+(AO|ActiveObject)"
+    examples: ["SensorReaderAO", "MotorControllerAO", "DisplayManagerAO"]
+    
+  signal_naming:
+    pattern: "[A-Z_]+_SIG"
+    examples: ["SENSOR_DATA_SIG", "MOTOR_CMD_SIG", "TIMEOUT_SIG"]
+    
+  state_naming:
+    pattern: "([A-Z][a-z]+)+(_[a-z]+)?"
+    examples: ["Idle", "Active", "Processing_data", "Error_recovery"]
+    
+  priority_assignment:
+    strategy: "rate_monotonic"
+    high_priority_range: [6, 8]
+    medium_priority_range: [3, 5]
+    low_priority_range: [1, 2]
+    
+  memory_sizing:
+    queue_depth_multiplier: 1.5
+    pool_size_safety_margin: 0.2
+    stack_size_minimum: 256
+    
+  timing_constraints:
+    max_rte_percentile: 95
+    tick_rate_options: [100, 1000, 10000]
+    interrupt_priority_levels: 4
+
+# Template substitution patterns
+template_patterns:
+  project_name: "{{PROJECT_NAME}}"
+  ao_name_upper: "{{AO_NAME_UPPER}}"
+  ao_name_lower: "{{AO_NAME_LOWER}}"
+  platform_define: "{{PLATFORM_DEFINE}}"
+  mcu_define: "{{MCU_DEFINE}}"
+  crystal_freq: "{{CRYSTAL_FREQ_HZ}}"
+  system_freq: "{{SYSTEM_FREQ_HZ}}"
+  flash_base: "{{FLASH_BASE_ADDR}}"
+  ram_base: "{{RAM_BASE_ADDR}}"
+  stack_size: "{{STACK_SIZE_BYTES}}"
+  queue_depth: "{{QUEUE_DEPTH}}"
+  max_priority: "{{MAX_PRIORITY_LEVEL}}"
+  tick_rate: "{{TICK_RATE_HZ}}"
