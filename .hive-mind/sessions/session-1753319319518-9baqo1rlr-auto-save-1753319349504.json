@@ -1,0 +1,81 @@
+{
+  "sessionId": "session-1753319319518-9baqo1rlr",
+  "checkpointId": "checkpoint-1753319349504-1akagpbyf",
+  "checkpointName": "auto-save-1753319349504",
+  "timestamp": "2025-07-24T01:09:09.505Z",
+  "data": {
+    "timestamp": "2025-07-24T01:09:09.504Z",
+    "changeCount": 5,
+    "changesByType": {
+      "swarm_created": [
+        {
+          "type": "swarm_created",
+          "data": {
+            "swarmId": "swarm-1753319319492-xat01tqka",
+            "swarmName": "hive-1753319319347",
+            "objective": "Understand the concepts Quantum Leaps by Miro Samek from https://github.com/QuantumLeaps. Become prepared to develop microcontroller firmware projects based on it.",
+            "workerCount": 8
+          },
+          "timestamp": "2025-07-24T01:08:39.519Z"
+        }
+      ],
+      "agent_activity": [
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1753319319492-xat01tqka-0",
+            "activity": "spawned",
+            "data": {
+              "type": "researcher",
+              "name": "Researcher Worker 1"
+            }
+          },
+          "timestamp": "2025-07-24T01:08:39.570Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1753319319492-xat01tqka-1",
+            "activity": "spawned",
+            "data": {
+              "type": "coder",
+              "name": "Coder Worker 2"
+            }
+          },
+          "timestamp": "2025-07-24T01:08:39.594Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1753319319492-xat01tqka-2",
+            "activity": "spawned",
+            "data": {
+              "type": "analyst",
+              "name": "Analyst Worker 3"
+            }
+          },
+          "timestamp": "2025-07-24T01:08:39.617Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1753319319492-xat01tqka-3",
+            "activity": "spawned",
+            "data": {
+              "type": "tester",
+              "name": "Tester Worker 4"
+            }
+          },
+          "timestamp": "2025-07-24T01:08:39.640Z"
+        }
+      ]
+    },
+    "statistics": {
+      "tasksProcessed": 0,
+      "tasksCompleted": 0,
+      "memoryUpdates": 0,
+      "agentActivities": 4,
+      "consensusDecisions": 0
+    }
+  }
+}
