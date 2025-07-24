@@ -1,4 +1,5 @@
 import { StateMachine, State, Transition, Event, DataMember } from '../types/stateMachine';
+import { HierarchicalStateParser } from './hierarchicalStateParser';
 
 export class QpMermaidParser {
     private stateMachine: StateMachine;
@@ -62,6 +63,10 @@ export class QpMermaidParser {
 
         // Post-process to set up parent-child relationships
         this.setupHierarchy();
+
+        // Apply hierarchical state parsing
+        const hierarchicalParser = new HierarchicalStateParser();
+        this.stateMachine = hierarchicalParser.parseHierarchicalStates(this.stateMachine);
 
         return this.stateMachine;
     }

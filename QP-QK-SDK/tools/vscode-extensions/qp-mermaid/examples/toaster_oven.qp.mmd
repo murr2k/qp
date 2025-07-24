@@ -1,0 +1,120 @@
+stateDiagram-v2
+    %% QP Active Object: ToasterOven
+    %% Priority: 3
+    %% Stack Size: 512
+    %% Description: Smart toaster oven with safety features
+    
+    [*] --> Off : @Q_INIT_SIG
+    
+    state Off {
+        entry: BSP_heaterOff()
+        entry: BSP_lampOff()
+        entry: BSP_displayOff()
+        
+        Off --> DoorOpen : DOOR_OPEN
+    }
+    
+    state DoorOpen {
+        entry: BSP_lampOn()
+        
+        DoorOpen --> Off : DOOR_CLOSE
+    }
+    
+    state DoorClosed {
+        entry: BSP_lampOff()
+        exit: BSP_heaterOff()
+        
+        [*] --> Idle
+        
+        state Idle {
+            entry: BSP_displayShow("Ready")
+            
+            Idle --> Toasting : TOAST / me->toast_time = get_toast_setting()
+            Idle --> Baking : BAKE / me->target_temp = get_temp_setting()
+        }
+        
+        state Toasting {
+            entry: BSP_heaterOn(TOAST_POWER)
+            entry: QTimeEvt_armX(&me->timer, me->toast_time, 0)
+            exit: QTimeEvt_disarm(&me->timer)
+            exit: BSP_heaterOff()
+            
+            [*] --> Heating
+            
+            state Heating {
+                entry: BSP_displayShow("Toasting...")
+                
+                Heating --> Done : TIMEOUT
+            }
+            
+            state Done {
+                entry: BSP_beep(3)
+                entry: BSP_displayShow("Done!")
+                
+                Done --> Idle : TOAST
+            }
+        }
+        
+        state Baking {
+            entry: BSP_displayTemp(me->target_temp)
+            exit: BSP_heaterOff()
+            
+            [*] --> Preheating
+            
+            state Preheating {
+                entry: BSP_heaterOn(MAX_POWER)
+                entry: BSP_displayShow("Preheating...")
+                
+                Preheating --> Maintaining : TEMP_REACHED [me->current_temp >= me->target_temp]
+                Preheating --> Preheating : TEMP_UPDATE / me->current_temp = get_temp(); BSP_displayTemp(me->current_temp)
+            }
+            
+            state Maintaining {
+                entry: BSP_beep(1)
+                entry: BSP_displayShow("Ready to bake")
+                
+                [*] --> HeaterOn
+                
+                state HeaterOn {
+                    entry: BSP_heaterOn(MAINTAIN_POWER)
+                    
+                    HeaterOn --> HeaterOff : TEMP_UPDATE [me->current_temp > me->target_temp + HYSTERESIS]
+                }
+                
+                state HeaterOff {
+                    entry: BSP_heaterOff()
+                    
+                    HeaterOff --> HeaterOn : TEMP_UPDATE [me->current_temp < me->target_temp - HYSTERESIS]
+                }
+                
+                Maintaining --> Idle : BAKE
+            }
+        }
+        
+        %% Safety feature: Cancel any operation
+        Toasting --> Idle : CANCEL / BSP_displayShow("Cancelled")
+        Baking --> Idle : CANCEL / BSP_displayShow("Cancelled")
+        
+        %% Door open interrupts everything
+        DoorClosed --> DoorOpen : DOOR_OPEN
+    }
+    
+    %% Safety timer - orthogonal region
+    --|| SafetyTimer {
+        [*] --> Monitoring
+        
+        state Monitoring {
+            entry: QTimeEvt_armX(&me->safety_timer, SAFETY_TIMEOUT, 0)
+            exit: QTimeEvt_disarm(&me->safety_timer)
+            
+            Monitoring --> SafetyShutdown : TIMEOUT / BSP_heaterOff(); BSP_displayError("Safety timeout")
+            Monitoring --> Monitoring : USER_ACTIVITY / QTimeEvt_rearm(&me->safety_timer, SAFETY_TIMEOUT)
+        }
+        
+        state SafetyShutdown {
+            entry: BSP_beepContinuous()
+            exit: BSP_beepOff()
+            
+            SafetyShutdown --> Monitoring : RESET
+        }
+    }

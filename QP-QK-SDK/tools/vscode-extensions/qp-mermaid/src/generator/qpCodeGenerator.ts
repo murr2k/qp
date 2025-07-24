@@ -93,7 +93,8 @@ export class QpCodeGenerator {
         lines.push('/* State handler declarations */');
         const allStates = this.getAllStates();
         for (const state of allStates) {
-            lines.push(`static QState ${this.stateMachine.name}_${state.name}(${this.stateMachine.name} * const me, QEvt const * const e);`);
+            const stateName = this.resolveStateName(state.name);
+            lines.push(`static QState ${this.stateMachine.name}_${stateName}(${this.stateMachine.name} * const me, QEvt const * const e);`);
         }
         lines.push('');
 
@@ -132,7 +133,8 @@ export class QpCodeGenerator {
             lines.push(`${this.indent}/* Initialize hardware, subscribe to events, etc. */`);
         }
         
-        lines.push(`${this.indent}return Q_TRAN(&${this.stateMachine.name}_${this.stateMachine.initialState});`);
+        const initialStateName = this.resolveStateName(this.stateMachine.initialState);
+        lines.push(`${this.indent}return Q_TRAN(&${this.stateMachine.name}_${initialStateName});`);
         lines.push('}');
         lines.push('');
 
@@ -148,8 +150,9 @@ export class QpCodeGenerator {
     private generateStateHandler(state: State): string[] {
         const lines: string[] = [];
         
+        const stateName = this.resolveStateName(state.name);
         lines.push(`/* State handler for ${state.name} */`);
-        lines.push(`static QState ${this.stateMachine.name}_${state.name}(${this.stateMachine.name} * const me, QEvt const * const e) {`);
+        lines.push(`static QState ${this.stateMachine.name}_${stateName}(${this.stateMachine.name} * const me, QEvt const * const e) {`);
         lines.push(`${this.indent}QState status_;`);
         lines.push(`${this.indent}switch (e->sig) {`);
 
@@ -178,7 +181,8 @@ export class QpCodeGenerator {
         // Initial transition for composite states
         if (state.children.length > 0 && state.initialTransition) {
             lines.push(`${this.indent}${this.indent}case Q_INIT_SIG: {`);
-            lines.push(`${this.indent}${this.indent}${this.indent}status_ = Q_TRAN(&${this.stateMachine.name}_${state.initialTransition.target});`);
+            const initialTarget = this.resolveStateName(state.initialTransition.target);
+            lines.push(`${this.indent}${this.indent}${this.indent}status_ = Q_TRAN(&${this.stateMachine.name}_${initialTarget});`);
             lines.push(`${this.indent}${this.indent}${this.indent}break;`);
             lines.push(`${this.indent}${this.indent}}`);
         }
@@ -193,7 +197,8 @@ export class QpCodeGenerator {
                     if (transition.action) {
                         lines.push(`${this.indent}${this.indent}${this.indent}${this.indent}${transition.action};`);
                     }
-                    lines.push(`${this.indent}${this.indent}${this.indent}${this.indent}status_ = Q_TRAN(&${this.stateMachine.name}_${transition.target});`);
+                    const targetName = this.resolveStateName(transition.target);
+                    lines.push(`${this.indent}${this.indent}${this.indent}${this.indent}status_ = Q_TRAN(&${this.stateMachine.name}_${targetName});`);
                     lines.push(`${this.indent}${this.indent}${this.indent}} else {`);
                     lines.push(`${this.indent}${this.indent}${this.indent}${this.indent}status_ = Q_UNHANDLED();`);
                     lines.push(`${this.indent}${this.indent}${this.indent}}`);
@@ -201,7 +206,8 @@ export class QpCodeGenerator {
                     if (transition.action) {
                         lines.push(`${this.indent}${this.indent}${this.indent}${transition.action};`);
                     }
-                    lines.push(`${this.indent}${this.indent}${this.indent}status_ = Q_TRAN(&${this.stateMachine.name}_${transition.target});`);
+                    const targetName = this.resolveStateName(transition.target);
+                    lines.push(`${this.indent}${this.indent}${this.indent}status_ = Q_TRAN(&${this.stateMachine.name}_${targetName});`);
                 }
                 
                 lines.push(`${this.indent}${this.indent}${this.indent}break;`);
@@ -221,7 +227,8 @@ export class QpCodeGenerator {
         // Default case
         lines.push(`${this.indent}${this.indent}default: {`);
         if (state.parent) {
-            lines.push(`${this.indent}${this.indent}${this.indent}status_ = Q_SUPER(&${this.stateMachine.name}_${state.parent});`);
+            const parentName = this.resolveStateName(state.parent);
+            lines.push(`${this.indent}${this.indent}${this.indent}status_ = Q_SUPER(&${this.stateMachine.name}_${parentName});`);
         } else {
             lines.push(`${this.indent}${this.indent}${this.indent}status_ = Q_SUPER(&QHsm_top);`);
         }
@@ -249,5 +256,11 @@ export class QpCodeGenerator {
         
         collectStates(this.stateMachine.states);
         return states;
+    }
+
+    private resolveStateName(stateName: string): string {
+        // Convert hierarchical state names to valid C identifiers
+        // e.g., "On.Operand1" becomes "On_Operand1"
+        return stateName.replace(/\./g, '_');
     }
 }

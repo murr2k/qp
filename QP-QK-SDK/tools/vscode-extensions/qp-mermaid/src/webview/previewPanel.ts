@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { MermaidPreprocessor } from '../preprocessor/mermaidPreprocessor';
 
 export class PreviewPanel {
     public static currentPanel: PreviewPanel | undefined;
@@ -116,6 +117,11 @@ export class PreviewPanel {
         mermaidContent = mermaidContent.replace(/^```mermaid\n/, '');
         mermaidContent = mermaidContent.replace(/\n```$/, '');
         mermaidContent = mermaidContent.trim();
+
+        // Preprocess QP-specific syntax
+        const preprocessor = new MermaidPreprocessor();
+        const preprocessed = preprocessor.preprocess(mermaidContent);
+        mermaidContent = preprocessed.mermaidDiagram;
 
         return `<!DOCTYPE html>
 <html lang="en">

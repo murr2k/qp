@@ -1,0 +1,96 @@
+stateDiagram-v2
+    %% QP Active Object: Calculator
+    %% Priority: 2
+    %% Stack Size: 1024
+    
+    [*] --> Off : @Q_INIT_SIG
+    
+    state Off {
+        entry: BSP_displayOff()
+        
+        Off --> On : ON_BUTTON
+    }
+    
+    state On {
+        entry: BSP_displayOn()
+        entry: me->operand1 = 0
+        entry: me->operand2 = 0
+        entry: me->operator = 0
+        exit: BSP_displayOff()
+        
+        [*] --> Ready
+        
+        state Ready {
+            entry: BSP_displayShow("0")
+            
+            Ready --> Operand1 : DIGIT / me->operand1 = digit_value(e)
+            Ready --> On : CLEAR
+        }
+        
+        state Operand1 {
+            entry: BSP_displayNumber(me->operand1)
+            
+            Operand1 --> Operand1 : DIGIT [me->operand1 < 999999] / me->operand1 = me->operand1 * 10 + digit_value(e)
+            Operand1 --> Operand1 : POINT [!me->has_decimal1] / me->has_decimal1 = true
+            Operand1 --> OpEntered : OPER / me->operator = oper_type(e)
+            Operand1 --> Ready : CLEAR
+        }
+        
+        state OpEntered {
+            entry: BSP_displayOperator(me->operator)
+            
+            OpEntered --> Operand2 : DIGIT / me->operand2 = digit_value(e)
+            OpEntered --> Ready : CLEAR
+            OpEntered --> Error : OPER [is_invalid_sequence()] / BSP_displayError("Invalid")
+        }
+        
+        state Operand2 {
+            entry: BSP_displayNumber(me->operand2)
+            
+            Operand2 --> Operand2 : DIGIT [me->operand2 < 999999] / me->operand2 = me->operand2 * 10 + digit_value(e)
+            Operand2 --> Result : EQUALS / me->result = calculate(me->operand1, me->operand2, me->operator)
+            Operand2 --> Error : EQUALS [me->operator == '/' && me->operand2 == 0] / BSP_displayError("Div by 0")
+            Operand2 --> Result : OPER / me->result = calculate(me->operand1, me->operand2, me->operator); me->operand1 = me->result; me->operator = oper_type(e)
+            Operand2 --> Ready : CLEAR
+        }
+        
+        state Result {
+            entry: BSP_displayNumber(me->result)
+            
+            Result --> Operand1 : DIGIT / me->operand1 = digit_value(e)
+            Result --> OpEntered : OPER / me->operand1 = me->result; me->operator = oper_type(e)
+            Result --> Ready : CLEAR
+            Result --> Result : EQUALS
+        }
+        
+        state Error {
+            entry: BSP_beep()
+            
+            Error --> Ready : CLEAR
+            Error --> Error : DIGIT
+            Error --> Error : OPER
+            Error --> Error : EQUALS
+        }
+        
+        %% Global handler for OFF button in any On substate
+        On --> Off : OFF_BUTTON
+    }
+    
+    %% Memory recall functionality (orthogonal to calculation states)
+    --|| Memory {
+        [*] --> NoMemory
+        
+        state NoMemory {
+            NoMemory --> HasMemory : MEM_STORE [in_state(Result)] / me->memory = me->result
+            NoMemory --> NoMemory : MEM_RECALL / BSP_displayError("No mem")
+        }
+        
+        state HasMemory {
+            entry: BSP_showMemoryIndicator()
+            exit: BSP_hideMemoryIndicator()
+            
+            HasMemory --> HasMemory : MEM_STORE [in_state(Result)] / me->memory = me->result
+            HasMemory --> HasMemory : MEM_RECALL / display_memory(me->memory)
+            HasMemory --> NoMemory : MEM_CLEAR
+        }
+    }

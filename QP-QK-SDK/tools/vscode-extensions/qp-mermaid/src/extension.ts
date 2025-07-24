@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { PreviewPanel } from './webview/previewPanel';
 import { QpMermaidParser } from './parser/qpMermaidParser';
 import { QpCodeGenerator } from './generator/qpCodeGenerator';
+import { registerValidateCommand } from './commands/validateCommand';
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('QP Mermaid extension is now active!');
@@ -128,6 +129,9 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
     );
+
+    // Register validation command
+    registerValidateCommand(context);
 
     context.subscriptions.push(
         previewCommand,

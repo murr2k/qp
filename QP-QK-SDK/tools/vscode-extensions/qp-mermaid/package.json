@@ -81,6 +81,12 @@
         "command": "qp-mermaid.exportToQM",
         "title": "QP: Export to QM Format",
         "category": "QP Mermaid"
+      },
+      {
+        "command": "qp-mermaid.validate",
+        "title": "QP: Validate State Machine",
+        "category": "QP Mermaid",
+        "icon": "$(check)"
       }
     ],
     "menus": {
