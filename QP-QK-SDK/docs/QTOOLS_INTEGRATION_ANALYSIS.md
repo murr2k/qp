@@ -90,6 +90,24 @@ This document records the analysis of existing Quantum Leaps QTools and their re
   - Complements qutest for comprehensive testing
   - Base for test generation features
 
+### 9. QM - QP Modeler (Separate Repository)
+- **Purpose**: Graphical modeling tool for UML state machines
+- **Repository**: https://github.com/QuantumLeaps/qm
+- **Key Features**:
+  - Visual hierarchical state machine design
+  - Code generation for QP frameworks
+  - Cross-platform desktop application
+  - Freeware (closed source)
+- **Integration Points**:
+  - Model import/export for web editor
+  - Code generation compatibility
+  - Design pattern reference
+- **Limitations**:
+  - Desktop-only (no web version)
+  - No API for programmatic access
+  - No collaborative features
+  - See detailed analysis in QM_ANALYSIS.md
+
 ## Gap Analysis
 
 ### Areas Well-Covered by Existing Tools
@@ -107,7 +125,12 @@ This document records the analysis of existing Quantum Leaps QTools and their re
    - qview handles real-time data visualization
    - qwin enables UI prototyping
 
-4. **Development Utilities**
+4. **Visual State Machine Design**
+   - QM provides desktop-based visual modeling
+   - Hierarchical state machine creation
+   - Code generation for QP frameworks
+
+5. **Development Utilities**
    - Code formatting (qclean)
    - Calculations (qcalc)
    - Resource management (qfsgen)

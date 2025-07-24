@@ -1,0 +1,179 @@
+{
+  "name": "qp-mermaid",
+  "displayName": "QP Mermaid State Machines",
+  "description": "Visual state machine editor for QP framework using Mermaid diagrams",
+  "version": "0.1.0",
+  "publisher": "qp-qk-sdk",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "qp",
+    "state machine",
+    "mermaid",
+    "hsm",
+    "uml",
+    "embedded"
+  ],
+  "icon": "media/icon.svg",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/murr2k/qp"
+  },
+  "main": "./out/extension.js",
+  "browser": "./out/web/extension.js",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": true
+  },
+  "activationEvents": [
+    "onLanguage:qp-mermaid",
+    "onCommand:qp-mermaid.preview",
+    "onCommand:qp-mermaid.generateCode"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "qp-mermaid",
+        "aliases": [
+          "QP Mermaid",
+          "QP State Machine"
+        ],
+        "extensions": [
+          ".qp.mmd",
+          ".qpsm"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "qp-mermaid",
+        "scopeName": "source.qp-mermaid",
+        "path": "./syntaxes/qp-mermaid.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "qp-mermaid.preview",
+        "title": "QP: Preview State Machine",
+        "category": "QP Mermaid",
+        "icon": "$(preview)"
+      },
+      {
+        "command": "qp-mermaid.generateCode",
+        "title": "QP: Generate C Code",
+        "category": "QP Mermaid",
+        "icon": "$(code)"
+      },
+      {
+        "command": "qp-mermaid.exportToQM",
+        "title": "QP: Export to QM Format",
+        "category": "QP Mermaid"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "resourceExtname == .qp.mmd",
+          "command": "qp-mermaid.preview",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceExtname == .qp.mmd",
+          "command": "qp-mermaid.generateCode",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "when": "resourceExtname == .qp.mmd",
+          "command": "qp-mermaid.preview",
+          "group": "qp-mermaid"
+        },
+        {
+          "when": "resourceExtname == .qp.mmd",
+          "command": "qp-mermaid.generateCode",
+          "group": "qp-mermaid"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "QP Mermaid",
+      "properties": {
+        "qp-mermaid.codeGeneration.targetLanguage": {
+          "type": "string",
+          "enum": [
+            "C",
+            "C++"
+          ],
+          "default": "C",
+          "description": "Target language for code generation"
+        },
+        "qp-mermaid.codeGeneration.includeComments": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include comments in generated code"
+        },
+        "qp-mermaid.preview.theme": {
+          "type": "string",
+          "enum": [
+            "default",
+            "dark",
+            "forest",
+            "neutral"
+          ],
+          "default": "default",
+          "description": "Mermaid diagram theme"
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "qp-mermaid.preview",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "resourceExtname == .qp.mmd"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package-web",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package-web": "webpack --mode production",
+    "compile-web": "webpack --mode development",
+    "watch-web": "webpack --mode development --watch",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint": "^8.28.0",
+    "typescript": "^4.9.3",
+    "@vscode/test-electron": "^2.2.0",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.0",
+    "ts-loader": "^9.4.1",
+    "process": "^0.11.10",
+    "assert": "^2.0.0"
+  },
+  "dependencies": {
+    "mermaid": "^10.6.0"
+  }
+}

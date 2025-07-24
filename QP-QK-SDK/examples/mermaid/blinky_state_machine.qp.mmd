@@ -1,0 +1,176 @@
+# Blinky State Machine - QP Mermaid Format
+
+This example demonstrates how QP state machines could be represented using an extended Mermaid syntax that includes QP-specific annotations.
+
+## State Diagram
+
+```mermaid
+stateDiagram-v2
+    %% QP Active Object: Blinky
+    %% Priority: 1
+    %% Stack Size: 512
+    
+    [*] --> Off : @Q_INIT_SIG
+    
+    state Off {
+        entry: BSP_ledOff(0)
+        entry: QTimeEvt_armX(&me->timeEvt, BSP_TICKS_PER_SEC/2, 0U)
+    }
+    
+    state On {
+        entry: BSP_ledOn(0)
+        entry: QTimeEvt_armX(&me->timeEvt, BSP_TICKS_PER_SEC/2, 0U)
+    }
+    
+    Off --> On : TIMEOUT
+    On --> Off : TIMEOUT
+```
+
+## Extended Syntax for QP
+
+### Active Object Definition
+```mermaid
+%%{init: {
+    'qp': {
+        'activeObject': 'Blinky',
+        'extends': 'QActive',
+        'priority': 1,
+        'stackSize': 512,
+        'queue': {
+            'size': 10,
+            'type': 'QEQueue'
+        }
+    }
+}}%%
+```
+
+### Events Definition
+```mermaid
+%%{events: [
+    {name: 'TIMEOUT', value: 'Q_USER_SIG'},
+    {name: 'BUTTON_PRESSED', value: 'Q_USER_SIG + 1'},
+    {name: 'BUTTON_RELEASED', value: 'Q_USER_SIG + 2'}
+]}%%
+```
+
+### Private Data Members
+```mermaid
+%%{data: [
+    {type: 'QTimeEvt', name: 'timeEvt', comment: 'Periodic timeout'},
+    {type: 'uint32_t', name: 'count', comment: 'Blink counter'},
+    {type: 'bool', name: 'isLedOn', comment: 'LED state'}
+]}%%
+```
+
+## Complex Example with Hierarchical States
+
+```mermaid
+stateDiagram-v2
+    %% QP Active Object: AdvancedBlinky
+    
+    [*] --> Operational : @Q_INIT_SIG
+    
+    state Operational {
+        [*] --> Off
+        
+        state Off {
+            entry: BSP_ledOff(0)
+            entry: QTimeEvt_armX(&me->timeEvt, SLOW_BLINK_RATE, 0U)
+        }
+        
+        state On {
+            entry: BSP_ledOn(0)
+            
+            [*] --> SlowBlink
+            
+            state SlowBlink {
+                entry: QTimeEvt_armX(&me->timeEvt, SLOW_BLINK_RATE, 0U)
+            }
+            
+            state FastBlink {
+                entry: QTimeEvt_armX(&me->timeEvt, FAST_BLINK_RATE, 0U)
+            }
+            
+            SlowBlink --> FastBlink : BUTTON_PRESSED
+            FastBlink --> SlowBlink : BUTTON_RELEASED
+        }
+        
+        Off --> On : TIMEOUT
+        On --> Off : TIMEOUT / [me->count < MAX_BLINKS]
+        On --> Maintenance : TIMEOUT / [me->count >= MAX_BLINKS]
+    }
+    
+    state Maintenance {
+        entry: BSP_displayMessage("Maintenance Required")
+        exit: me->count = 0
+        
+        Maintenance --> Operational : BUTTON_PRESSED [isLongPress()]
+    }
+    
+    %% Global transitions
+    Operational --> Emergency : EMERGENCY_STOP
+    Maintenance --> Emergency : EMERGENCY_STOP
+    
+    state Emergency {
+        entry: BSP_allLedsOn()
+        entry: BSP_soundAlarm()
+        
+        Emergency --> Operational : RESET / resetSystem()
+    }
+```
+
+## Code Generation Annotations
+
+### Guards
+```
+transition --> target : EVENT / [guard_condition]
+```
+
+### Actions
+```
+transition --> target : EVENT / action()
+```
+
+### Entry/Exit Actions
+```
+state StateName {
+    entry: action1()
+    entry: action2()
+    exit: cleanup()
+}
+```
+
+### Internal Transitions
+```
+state Active {
+    : TICK / updateCounter()  %% Internal transition
+}
+```
+
+## Generated Code Structure
+
+From this diagram, the extension would generate:
+
+1. **Header File** (`blinky.h`):
+   - Active Object structure definition
+   - Event declarations
+   - Public methods
+
+2. **Source File** (`blinky.c`):
+   - State handler functions
+   - Constructor
+   - Initial transition
+
+3. **Interface File** (`blinky_interface.h`):
+   - Public API
+   - Event posting macros
+
+## Benefits of This Approach
+
+1. **Visual and Textual**: Can be edited graphically or as text
+2. **Version Control Friendly**: Plain text format
+3. **GitHub Integration**: Renders in markdown files
+4. **Extensible**: Can add QP-specific features
+5. **AI-Friendly**: Easy to parse and generate
+
+This format provides a bridge between visual design and QP code generation while maintaining compatibility with existing tools.

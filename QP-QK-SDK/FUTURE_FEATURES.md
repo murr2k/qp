@@ -23,10 +23,11 @@ The existing tools provide a foundation, but the planned enhancements would exte
 
 ### Building on Existing Tools:
 1. **Enhanced Debugging (Feature #4)** - Extend qspy with AI analysis and time-travel capabilities
-2. **Visual Development (Feature #3)** - Build web interfaces on top of qview's visualization
+2. **Visual Development (Feature #3)** - Build web interfaces on top of qview's visualization; complement QM with web-based editor
 3. **Testing Framework (Features #15-16)** - Extend qutest with mutation testing and HIL support
 4. **HMI Development (Feature #18)** - Use qwin for rapid prototyping before target deployment
 5. **Performance Analysis (Feature #11)** - Layer analytics on top of qspy/qview data streams
+6. **State Machine Design** - Import/export compatibility with QM models; add collaboration layer
 
 ### Complementary New Features:
 - AI agent capabilities (not covered by existing tools)
@@ -53,7 +54,12 @@ The existing tools provide a foundation, but the planned enhancements would exte
 
 ### 3. Visual Development Environment
 - **Web-Based IDE**: Browser-based development with real-time collaboration
-- **Visual State Machine Editor**: Drag-and-drop HSM design with live preview (extends beyond QM)
+  - *Opportunity: GitHub.dev provides free web-based VS Code platform*
+  - *See GITHUB_DEV_VISUAL_EDITOR_PROPOSAL.md for implementation strategy*
+- **Visual State Machine Editor**: Drag-and-drop HSM design with live preview
+  - *Note: QM provides desktop visual modeling but lacks web interface, live preview, collaboration, and API access*
+  - *Solution: Mermaid-based VS Code extension for GitHub.dev - see VSCODE_EXTENSION_EVALUATION.md*
+  - *Example: See examples/mermaid/blinky_state_machine.qp.mmd for syntax proposal*
 - **Timeline Debugger**: Visual representation of event flow and state transitions (builds on qview)
 - **Performance Visualizer**: Real-time CPU, memory, and timing analysis (extends qview capabilities)
 
@@ -199,7 +205,7 @@ The existing tools provide a foundation, but the planned enhancements would exte
 
 ### Phase 1 (High Priority)
 These features should be implemented first as they provide immediate value:
-- Visual State Machine Editor
+- Visual State Machine Editor (Web-based to complement QM desktop tool)
 - Additional Platform Support (RISC-V, RP2040)
 - MQTT/CoAP Templates
 - VS Code Extension

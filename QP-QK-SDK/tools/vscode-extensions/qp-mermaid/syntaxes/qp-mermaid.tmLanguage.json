@@ -1,0 +1,83 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "QP Mermaid",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#diagram"
+    },
+    {
+      "include": "#qp-annotations"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.percentage.qp-mermaid",
+          "match": "%%.*$"
+        },
+        {
+          "name": "comment.block.qp-mermaid",
+          "begin": "%%{",
+          "end": "}%%"
+        }
+      ]
+    },
+    "diagram": {
+      "patterns": [
+        {
+          "name": "keyword.control.diagram.qp-mermaid",
+          "match": "\\b(stateDiagram-v2|stateDiagram|state|end)\\b"
+        },
+        {
+          "name": "keyword.operator.arrow.qp-mermaid",
+          "match": "-->|\\[\\*\\]"
+        },
+        {
+          "name": "entity.name.type.state.qp-mermaid",
+          "match": "\\b[A-Z][a-zA-Z0-9_]*\\b(?=\\s*:)"
+        },
+        {
+          "name": "string.quoted.double.event.qp-mermaid",
+          "match": ":\\s*([A-Z_]+)(?:\\s*/\\s*(.+))?",
+          "captures": {
+            "1": {
+              "name": "constant.language.event.qp-mermaid"
+            },
+            "2": {
+              "name": "support.function.action.qp-mermaid"
+            }
+          }
+        }
+      ]
+    },
+    "qp-annotations": {
+      "patterns": [
+        {
+          "name": "keyword.other.qp-specific.qp-mermaid",
+          "match": "\\b(entry|exit|@Q_INIT_SIG|@Q_ENTRY_SIG|@Q_EXIT_SIG)\\b"
+        },
+        {
+          "name": "support.type.qp.qp-mermaid",
+          "match": "\\b(QActive|QTimeEvt|QEvt|QState|QMsm|QHsm)\\b"
+        },
+        {
+          "name": "support.function.qp.qp-mermaid",
+          "match": "\\b(QTimeEvt_armX|QTimeEvt_disarm|Q_TRAN|Q_HANDLED|Q_SUPER|BSP_\\w+)\\b"
+        },
+        {
+          "name": "variable.parameter.qp-mermaid",
+          "match": "\\bme\\b|&me->\\w+"
+        },
+        {
+          "name": "constant.numeric.qp-mermaid",
+          "match": "\\b\\d+U?\\b"
+        }
+      ]
+    }
+  },
+  "scopeName": "source.qp-mermaid"
+}
