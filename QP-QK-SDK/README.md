@@ -161,6 +161,15 @@ QP-QK-SDK/
 - **Graphics**: LVGL, EmWin
 - **Sensors**: Driver libraries
 
+## Future Development
+
+For a comprehensive list of planned features and enhancements, see [FUTURE_FEATURES.md](FUTURE_FEATURES.md). This includes:
+- AI Agent enhancements and intelligent code generation
+- Visual development tools and web-based IDE
+- Additional platform support (RISC-V, Raspberry Pi Pico, etc.)
+- Safety-critical and security features
+- Industry-specific solutions and reference designs
+
 ## License and Usage
 
 This SDK is designed for educational and development purposes. It provides templates and patterns for using the Quantum Leaps QP framework, which has its own licensing terms (GPL/Commercial dual license).
@@ -177,3 +186,5 @@ This SDK is designed for educational and development purposes. It provides templ
 ## Support and Development
 
 This SDK is continuously updated with new patterns, platforms, and capabilities. It serves as a comprehensive foundation for AI agents to develop professional microcontroller firmware using modern event-driven architecture principles.
+
+See [FUTURE_FEATURES.md](FUTURE_FEATURES.md) for the complete roadmap and upcoming enhancements.
