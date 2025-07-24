@@ -110,7 +110,12 @@ export class PreviewPanel {
         const config = vscode.workspace.getConfiguration('qp-mermaid');
         const theme = config.get<string>('preview.theme', 'default');
 
-        const mermaidContent = this._document.getText();
+        let mermaidContent = this._document.getText();
+        
+        // Remove markdown code fences if present
+        mermaidContent = mermaidContent.replace(/^```mermaid\n/, '');
+        mermaidContent = mermaidContent.replace(/\n```$/, '');
+        mermaidContent = mermaidContent.trim();
 
         return `<!DOCTYPE html>
 <html lang="en">
